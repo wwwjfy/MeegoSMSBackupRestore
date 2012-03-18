@@ -1,0 +1,12 @@
+Source: smsbackuprestore
+Section: user/Other
+Priority: extra
+Maintainer: Tony Wang <wwwjfy@gmail.com>
+Build-Depends: debhelper (>= 7), dpatch
+Standards-Version: 3.8.4
+Homepage: <insert the upstream URL, if relevant>
+
+Package: smsbackuprestore
+Architecture: any
+Depends: qt-components, ${shlibs:Depends}, ${misc:Depends}
+Description: SMS backup and restore tool using csv

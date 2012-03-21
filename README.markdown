@@ -8,6 +8,17 @@ run on device
 
     dpkg -i smsbackuprestore_0.1_armel.deb
 
+## Format
+
+It uses psudo-csv format without header.
+
+	phone_number,direction,date,"content"
+
+- phone_number: the phone number sending or receiving SMS
+- direction: 1 for inbound, 2 for outbound
+- date: the format is yyyy-MM-dd hh:mm:ss
+- content: double quotes are used in case any CRLF line breaks. If double quotes included in content, use "".
+
 ## Functionalities
 
 ### Import

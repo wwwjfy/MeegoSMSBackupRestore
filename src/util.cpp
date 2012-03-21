@@ -9,38 +9,44 @@ void Util::importSMS(QTextStream &in) {
     groupModel.setQueryMode(EventModel::SyncQuery);
     QList<Event> events;
     int count = 0;
+    int groupId;
+    QMap<QString, int> phoneGroupMap;
     while (!(line = in.readLine()).isNull()) {
         count ++;
         std::cout << "Handling " << count << " messages" << std::endl;
         QStringList stringList = line.split(QChar(','));
 
         QString remoteUid = stringList.at(0);
-        int groupId = -1;
 
         QString localUid = RING_ACCOUNT;
 
         QDateTime startTime = QDateTime::fromString(stringList.at(2), "yyyy-MM-dd hh:mm:ss");
         QDateTime endTime = startTime;
 
-        if (!groupModel.getGroups(RING_ACCOUNT, QString(remoteUid))) {
-            std::cout << "Error getting groups!";
-            return;
-        } else {
-            if (groupModel.rowCount() >= 1) {
-                groupId = groupModel.group(groupModel.index(0, 0)).id();
+        if (!phoneGroupMap.contains(remoteUid)) {
+            if (!groupModel.getGroups(RING_ACCOUNT, QString(remoteUid))) {
+                std::cout << "Error getting groups!";
+                return;
             } else {
-                // new group
-                Group group;
-                group.setLocalUid(localUid);
-                QStringList remoteUids;
-                remoteUids << remoteUid;
-                group.setRemoteUids(remoteUids);
-                if (!groupModel.addGroup(group)) {
-                    qCritical() << "Error adding group";
-                    return;
+                if (groupModel.rowCount() >= 1) {
+                    groupId = groupModel.group(groupModel.index(0, 0)).id();
+                } else {
+                    // new group
+                    Group group;
+                    group.setLocalUid(localUid);
+                    QStringList remoteUids;
+                    remoteUids << remoteUid;
+                    group.setRemoteUids(remoteUids);
+                    if (!groupModel.addGroup(group)) {
+                        qCritical() << "Error adding group";
+                        return;
+                    }
+                    groupId = group.id();
                 }
-                groupId = group.id();
-            }   
+                phoneGroupMap.insert(remoteUid, groupId);
+            }
+        } else {
+            groupId = phoneGroupMap[remoteUid];
         }
 
         Event::EventDirection direction = Event::UnknownDirection;
@@ -75,24 +81,12 @@ void Util::importSMS(QTextStream &in) {
             }
         }
         freeText = freeText.mid(1, freeText.length() - 2);
+        freeText.replace(QString("\"\""), QChar('"'));
         e.setFreeText(freeText);
 
         events.append(e);
 
         std::cout << "Handled " << count << " messages" << std::endl;
-
-        if (count == 200)
-        {
-            std::cout << "About to commit the changes" << std::endl;
-            EventModel model;
-            Catcher c(&model);
-            if (!model.addEvents(events, false)) {
-                qCritical() << "Error adding events";
-                return;
-            }
-
-            c.waitCommit(events.count());
-        }
     }
     if (events.count() > 0) {
         std::cout << "About to commit the changes" << std::endl;

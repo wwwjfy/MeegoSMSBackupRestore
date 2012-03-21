@@ -27,8 +27,8 @@ Usage:
 
     smsbackuprestore import [filename]
 
-After testing, importing will do around 100 messages per minute on N9.
-It'll commit every 200 messages to quiet warning "The task queue's background thread stalled".
+It'll take quite long time to commit the changes if you've got thousands of messages.
+Time needed varies as groups creation also takes time.
 
 ### Export
 

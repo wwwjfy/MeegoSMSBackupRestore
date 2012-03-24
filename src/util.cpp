@@ -74,7 +74,7 @@ void Util::importSMS(QTextStream &in) {
         {
             QString nextLine;
             while (!(nextLine = in.readLine()).isNull()) {
-                freeText += nextLine;
+                freeText += "\n" + nextLine;
                 if (nextLine.count(QChar('"')) % 2 != 0) {
                     break;
                 }

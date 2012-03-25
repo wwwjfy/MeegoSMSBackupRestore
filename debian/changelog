@@ -1,3 +1,9 @@
+smsbackuprestore (0.3) unstable; urgency=low
+
+  * Fix the multiline issue
+
+ -- Tony Wang <wwwjfy@gmail.com>  Sun, 25 Mar 2012 22:30:01 +0800
+
 smsbackuprestore (0.2) unstable; urgency=low
 
   * Greatly improve the speed of importing

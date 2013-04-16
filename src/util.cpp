@@ -115,17 +115,35 @@ void Util::exportSMS(QTextStream &out) {
     model.setQueryMode(EventModel::SyncQuery);
     for (int i = 0; i < groupModel.rowCount(); i++) {
         Group g = groupModel.group(groupModel.index(i, 0));
+        int limit = 1000;
+        int offset = 0;
+        bool keepgoing = true;
 
-        model.getEvents(g.id());
+        std::cout << "selected group " << g.id() << std::endl;
 
-        // the events got by getEvents is reversed-ordered
-        for (int i = model.rowCount() - 1; i >= 0; i--) {
-            Event event = model.event(model.index(i, 0));
-            out << QString(event.remoteUid() % QChar(',') %
-                                      QString::number(event.direction()) % QChar(',') %
-                                      event.startTime().toLocalTime().toString(QString("yyyy-MM-dd hh:mm:ss")) % QChar(',') %
-                                      QChar('"') % event.freeText().replace(QChar('"'), QString("\"\"")) % QChar('"'));
-            out << "\n";
+        while(keepgoing)
+        {
+            int count = 0;
+            model.setLimit(limit);
+            model.setOffset(offset);
+            std::cout << "  getEvents() from " << offset << " to " << offset + limit << std::endl;
+            model.getEvents(g.id());
+            std::cout << "  got " << model.rowCount() << " events for group " << g.id() << std::endl;
+            count = model.rowCount();
+            offset += count;
+
+            // If we got less than limit events, then it's the last batch
+            keepgoing = (count == limit);
+
+            // the events got by getEvents is reversed-ordered
+            for (int i = count - 1; i >= 0; i--) {
+                Event event = model.event(model.index(i, 0));
+                out << QString(event.remoteUid() % QChar(',') %
+                                          QString::number(event.direction()) % QChar(',') %
+                                          event.startTime().toLocalTime().toString(QString("yyyy-MM-dd hh:mm:ss")) % QChar(',') %
+                                          QChar('"') % event.freeText().replace(QChar('"'), QString("\"\"")) % QChar('"'));
+                out << "\n";
+            }
         }
     }
 }

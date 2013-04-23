@@ -1,0 +1,15 @@
+*.deb
+*.log
+*.o
+
+src/smsbackuprestore
+src/moc_catcher.cpp
+
+Makefile
+build-stamp
+configure-stamp
+
+debian/smsbackuprestore/
+debian/files
+debian/smsbackuprestore.aegis
+debian/smsbackuprestore.substvars

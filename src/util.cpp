@@ -130,10 +130,10 @@ void Util::exportSMS(QTextStream &out) {
             model.getEvents(g.id());
             std::cout << "  got " << model.rowCount() << " events for group " << g.id() << std::endl;
             count = model.rowCount();
-            offset += count;
+            offset += limit;
 
-            // If we got less than limit events, then it's the last batch
-            keepgoing = (count == limit);
+            // Stop when no more events found
+            keepgoing = (count > 0);
 
             // the events got by getEvents is reversed-ordered
             for (int i = count - 1; i >= 0; i--) {
